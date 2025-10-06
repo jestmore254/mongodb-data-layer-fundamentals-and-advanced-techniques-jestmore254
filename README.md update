@@ -1,0 +1,210 @@
+# 📚 PLP Bookstore MongoDB Project
+
+This assignment demonstrates the use of MongoDB for managing a simple bookstore database.  
+It covers database setup, CRUD operations, advanced queries, aggregation pipelines, and indexing.  
+
+---
+
+## 1. 🛠️ Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- **Node.js** (latest LTS version) → [Download here](https://nodejs.org/)  
+- **MongoDB Community Edition** OR a **MongoDB Atlas Cluster**  
+- **MongoDB Shell (mongosh)** or **MongoDB Compass**  
+
+---
+
+## 2. 🚀 Setup Instructions
+
+### Step 1: Install MongoDB
+- **Local Installation**  
+  Download and install MongoDB Community Edition: [MongoDB Installation Guide](https://www.mongodb.com/docs/manual/installation/)  
+
+- **Cloud Setup (Atlas)**  
+  1. Create a free MongoDB Atlas account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).  
+  2. Create a free cluster.  
+  3. Obtain the **connection string (URI)** to connect using MongoDB Shell or Compass.  
+
+### Step 2: Create Database and Collection
+1. Open your MongoDB shell (`mongosh`) or connect via Compass.  
+2. Run the following commands:
+   ```javascript
+   use plp_bookstore
+   db.createCollection("books")
+Step 3: Insert Sample Data
+Use the provided insert_books.js script to insert at least 10 book documents with the following fields:
+
+title (string)
+
+author (string)
+
+genre (string)
+
+published_year (number)
+
+price (number)
+
+in_stock (boolean)
+
+pages (number)
+
+publisher (string)
+
+Run the script:
+
+bash
+Copy code
+mongosh < insert_books.js
+You should now have 10+ documents in the books collection.
+
+3. 📖 Tasks
+Task 1: Basic CRUD Operations
+Find all books in a specific genre:
+
+javascript
+Copy code
+db.books.find({ genre: "Fiction" })
+Find books published after a certain year:
+
+javascript
+Copy code
+db.books.find({ published_year: { $gt: 2010 } })
+Find books by a specific author:
+
+javascript
+Copy code
+db.books.find({ author: "Harper Lee" })
+Update the price of a specific book:
+
+javascript
+Copy code
+db.books.updateOne(
+  { title: "To Kill a Mockingbird" },
+  { $set: { price: 15.99 } }
+)
+Delete a book by its title:
+
+javascript
+Copy code
+db.books.deleteOne({ title: "To Kill a Mockingbird" })
+Task 2: Advanced Queries
+Find books that are in stock and published after 2010:
+
+javascript
+Copy code
+db.books.find({ in_stock: true, published_year: { $gt: 2010 } })
+Projection (return only title, author, price):
+
+javascript
+Copy code
+db.books.find({}, { title: 1, author: 1, price: 1, _id: 0 })
+Sorting by price:
+
+javascript
+Copy code
+db.books.find().sort({ price: 1 })   // Ascending
+db.books.find().sort({ price: -1 })  // Descending
+Pagination (5 books per page):
+
+javascript
+Copy code
+db.books.find().sort({ price: 1 }).skip(0).limit(5)   // Page 1
+db.books.find().sort({ price: 1 }).skip(5).limit(5)   // Page 2
+Task 3: Aggregation Pipelines
+Calculate the average price by genre:
+
+javascript
+Copy code
+db.books.aggregate([
+  { $group: { _id: "$genre", avgPrice: { $avg: "$price" } } }
+])
+Find the author with the most books:
+
+javascript
+Copy code
+db.books.aggregate([
+  { $group: { _id: "$author", totalBooks: { $sum: 1 } } },
+  { $sort: { totalBooks: -1 } },
+  { $limit: 1 }
+])
+Group books by publication decade:
+
+javascript
+Copy code
+db.books.aggregate([
+  { $project: { decade: { $subtract: [ "$published_year", { $mod: [ "$published_year", 10 ] } ] } } },
+  { $group: { _id: "$decade", count: { $sum: 1 } } },
+  { $sort: { _id: 1 } }
+])
+Task 4: Indexing
+Create an index on title:
+
+javascript
+Copy code
+db.books.createIndex({ title: 1 })
+Create a compound index on author and published_year:
+
+javascript
+Copy code
+db.books.createIndex({ author: 1, published_year: 1 })
+Use explain() to check query performance:
+
+javascript
+Copy code
+db.books.find({ title: "Book Title" }).explain("executionStats")
+4. 🧪 Expected Outcome
+A fully functional MongoDB bookstore database.
+
+CRUD queries correctly performing insert, find, update, and delete operations.
+
+Advanced queries demonstrating filtering, projection, sorting, and pagination.
+
+Aggregation pipelines for data analysis.
+
+Indexes implemented with measurable performance improvement.
+
+5. 📂 Project Structure
+graphql
+Copy code
+plp-bookstore/
+│── insert_books.js      # Script to insert 10+ sample books
+│── queries.js           # All MongoDB queries and pipelines
+│── README.md            # Project documentation
+│── screenshot.png       # Screenshot of MongoDB Compass/Atlas with data
+6. ✅ Submission Instructions
+Accept the GitHub Classroom assignment invitation.
+
+Clone your personal repository:
+
+bash
+Copy code
+git clone <repo-url>
+cd plp-bookstore
+Add the following files:
+
+insert_books.js
+
+queries.js
+
+README.md
+
+Screenshot of MongoDB Compass or Atlas showing collections
+
+Commit and push changes:
+
+bash
+Copy code
+git add .
+git commit -m "Completed MongoDB Bookstore Project"
+git push origin main
+
+📌 Notes
+Ensure your field names in documents exactly match those in queries.
+
+Use db.books.countDocuments() to verify data insertion.
+
+Test each query in mongosh or Compass before submission.
+
+yaml
+Copy code
